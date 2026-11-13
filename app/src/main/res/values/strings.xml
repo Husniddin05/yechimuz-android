@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">YechimUZ</string>
+    <string name="slogan">Muammo qo‘ying. Yechim toping. Imkoniyat yarating.</string>
+    <string name="no_internet_title">Internet bilan aloqa yo‘q</string>
+    <string name="no_internet_desc">YechimUZ to‘liq onlayn platforma. Iltimos, Wi-Fi yoki mobil internetni yoqing.</string>
+    <string name="retry">Qayta urinish</string>
+</resources>

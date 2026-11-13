@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 1. Radiant Energy Rays (Vibrant Gold #F59E0B) -->
+    <!-- Top Ray -->
+    <path
+        android:pathData="M54,21 L54,15"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"/>
+    <!-- Top-Left Ray -->
+    <path
+        android:pathData="M39,26 L35,21"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"/>
+    <!-- Top-Right Ray -->
+    <path
+        android:pathData="M69,26 L73,21"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"/>
+    <!-- Left Ray -->
+    <path
+        android:pathData="M32,38 L26,38"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"/>
+    <!-- Right Ray -->
+    <path
+        android:pathData="M76,38 L82,38"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.8"
+        android:strokeLineCap="round"/>
+
+    <!-- 2. Lightbulb Outer Shell (Crisp White #FFFFFF) -->
+    <path
+        android:pathData="M54,26 C44.5,26 37,33.5 37,43 C37,49 41.5,53.5 44,57 L64,57 C66.5,53.5 71,49 71,43 C71,33.5 63.5,26 54,26 Z"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- 3. Lightbulb Base Screws (Gold #F59E0B) -->
+    <path
+        android:pathData="M46,59 L62,59"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M48,62 L60,62"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M50,65 L58,65"
+        android:strokeColor="#F59E0B"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"/>
+
+    <!-- 4. Stylized "Y" Logo inside Bulb (Royal Violet #7C3AED) -->
+    <path
+        android:pathData="M45,35 L54,45 M63,35 L54,45 M54,45 L54,54"
+        android:strokeColor="#7C3AED"
+        android:strokeWidth="4.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <!-- 5. Brand Badge "Y.UZ" at bottom -->
+    <!-- Pill background -->
+    <path
+        android:pathData="M37,70 h34 c3.5,0 6,2.5 6,6 v0 c0,3.5 -2.5,6 -6,6 h-34 c-3.5,0 -6,-2.5 -6,-6 v0 c0,-3.5 2.5,-6 6,-6 Z"
+        android:fillColor="#F59E0B"/>
+
+    <!-- "Y" letter in badge -->
+    <path
+        android:pathData="M41,73.5 L44,77 L47,73.5 M44,77 L44,80.5"
+        android:strokeColor="#4C1D95"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+    <!-- Dot "." in badge -->
+    <path
+        android:pathData="M50,79.5 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"
+        android:fillColor="#4C1D95"/>
+
+    <!-- "U" letter in badge -->
+    <path
+        android:pathData="M54.5,73.5 L54.5,78.5 C54.5,80.5 58.5,80.5 58.5,78.5 L58.5,73.5"
+        android:strokeColor="#4C1D95"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"/>
+
+    <!-- "Z" letter in badge -->
+    <path
+        android:pathData="M62,73.5 L67,73.5 L62,80.5 L67,80.5"
+        android:strokeColor="#4C1D95"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+
+</vector>

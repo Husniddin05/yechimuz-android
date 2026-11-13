@@ -1,0 +1,152 @@
+================================================================================
+                    YECHIMUZ ANDROID APK — MASTER ROADMAP v1.2.0
+              YANGILANGAN ISH REJASI VA ARXITEKTURA BO'YICHA RASMIY HISOBOT
+================================================================================
+Loyiha Shiori:        "Muammo qo'ying. Yechim toping. Imkoniyat yarating."
+Hujjat Turi:          Executive Project & Architecture Report (Rasmiy Hisobot)
+Versiya:              v1.2.0 (Production Architecture & Release Engineering)
+Sana:                 2026-yil 13-noyabr
+Bog'langan Web vers:  v1.1.0 (Git Commit: 0ecafce)
+Rasmiy Web Domen:     https://yechimuz-lovat.vercel.app
+Rasmiy API Manzili:   https://yechimuz-lovat.vercel.app/api/v1
+Markaziy DB:          Neon Tech PostgreSQL (Production)
+Mavjud Web Repo:      https://github.com/Husniddin05/yechimuz
+Rejalangan APK Repo:  https://github.com/Husniddin05/yechimuz-android (Alohida)
+Hozirgi Holat:        Reja to'liq tayyor. Ruxsatsiz kod yozilmadi va hech narsa boshlanmadi.
+
+================================================================================
+1. ARXITEKTURAVIY 7 TA O'ZGARTIRILMAS QAT'IY QOIDA (DAXLSIZLIK CHEKLOVLARI)
+================================================================================
+1. Foydalanuvchining aniq yozma ruxsatisiz kod yozish boshlanmaydi.
+2. Foydalanuvchining aniq yozma ruxsatisiz yangi GitHub repository yaratilmaydi.
+3. Mavjud Web platforma (Husniddin05/yechimuz) kodiga 1 bayt ham tegilmaydi.
+4. Vercel serverdagi mavjud Backend API ga ruxsatsiz o'zgartirish kiritilmaydi.
+5. Neon PostgreSQL Production bazasi strukturasiga ruxsatsiz o'zgartirish kiritilmaydi.
+6. Hech qanday ruxsatsiz deploy amalga oshirilmaydi.
+7. Tasdiqlanmagan imkoniyatlar (tekshirilmagan FCM yoki farazlar) mavjud deb hisoblanmaydi.
+
+================================================================================
+2. ANDROID TEXNOLOGIYALARI TAQQOSLASH HISOBOTI (KOTLIN NATIVE VS CAPACITOR)
+================================================================================
+Loyiha uchun ikki xil texnologik yo'nalish 8 ta mezon bo'yicha chuqur taqqoslandi:
+
+A) VARIANT A: KOTLIN NATIVE (Jetpack Compose):
+   - Ishlash Tezligi: Maksimal yuqori (60-120 FPS), apparat resurslaridan to'liq foydalanish.
+   - UI/UX Imkoniyatlari: 100% Native Material 3, zamonaviy imo-ishoralar, haptik qayta aloqa.
+   - Backend Integratsiyasi: Retrofit/OkHttp orqali aniq JSON va cookie/header boshqaruvi.
+   - Push Notification: FirebaseMessagingService orqali to'liq va cheklovlarsiz boshqaruv.
+   - Xavfsizlik: Android Keystore, EncryptedSharedPreferences, R8/ProGuard himoyasi.
+   - Kengaytirish: Istalgan native Android SDK, biometrika, sensorlar bemalol ulanadi.
+   - Texnik Xizmat: Alohida mobil kod bazasini yuritish talab etiladi.
+   - Google Play: 100% tavsiya etilgan format, kichik AAB hajmi, eng yuqori reyting.
+
+B) VARIANT B: CAPACITOR (Web-Native Hybrid Wrapper):
+   - Ishlash Tezligi: O'rtacha-yuqori (Android System WebView orqali ishlaydi).
+   - UI/UX Imkoniyatlari: Mavjud Next.js UI responsiv ko'rinishida to'g'ridan-to'g'ri aks etadi.
+   - Backend Integratsiyasi: Web platformadagi mavjud marshrutlar va cookielar bilan bir zumda ishlaydi.
+   - Push Notification: @capacitor/push-notifications plagini orqali ishlaydi.
+   - Xavfsizlik: Yaxshi, lekin WebView xavfsizligi va SSL sozlamalari nazorat qilinishi shart.
+   - Kengaytirish: Tayyor plaginlarga bog'liq, plagin bo'lmasa native ko'prik (bridge) kerak.
+   - Texnik Xizmat: Web UI yangilanganda APK ham tabiiy ravishda oson yangilanadi.
+   - Google Play: Mos, lekin ilova "faqat veb oynasi" bo'lib qolmasligi uchun ehtiyotkorlik talab etiladi.
+
+MUHIM QOIDALAR:
+Yakuniy texnologiya foydalanuvchi tomonidan yozma tasdiqlanmaguncha "tanlangan"
+deb hisoblanmaydi! Qaror to'liq foydalanuvchi ixtiyorida.
+
+================================================================================
+3. SINXRONLIK VA REAL-TIME MEXANIZMI ANIQ MEZONLARI
+================================================================================
+1. MARKAZIY MANBA SINXRONLIGI (SINGLE SOURCE OF TRUTH):
+   Web platforma ham, Android ilova ham faqat bitta markaziy Neon PostgreSQL
+   ma'lumotlar bazasiga ulanadi. Webda qo'shilgan ma'lumot Androidda bir soniyada
+   aks etadi va aksincha.
+
+2. REAL-TIME YANGILANISH TURLARI:
+   - Standart so'rovlar (Oddiy API): Ro'yxatdan o'tish, login, muammo yaratish,
+     yechim topshirish, profilni ko'rish (Request-Response).
+   - Xavfsiz Chat tizimi: Mavjud Web platformadagi kabi 4 soniyalik barqaror
+     polling orqali ishlaydi. Vercel Serverless doimiy WebSocket ulanishlarida
+     texnik cheklovlarga ega bo'lgani sababli, polling eng barqaror yechimdir.
+
+================================================================================
+4. PUSH NOTIFICATION (FCM) AUDIT MEZONI
+================================================================================
+- Hozirgi Backendda qurilma tokenlarini saqlash (DeviceToken) va FCM SDK mavjudligi
+  kafolatlanmagan.
+- Qat'iy qoida: Avval Backend auditi o'tkaziladi. Agar Backendga yangi model yoki
+  endpoint kiritish zarur bo'lsa, foydalanuvchining alohida yozma roziligi olinadi.
+- Deep Link: Bildirishnoma bosilganda to'g'ri ekranga (Chat, Muammo, Yechim) o'tishi
+  ta'minlanadi.
+
+================================================================================
+5. MA'LUMOTLAR BAZASI VA QAT'IY ONLAYN REJIM
+================================================================================
+- Production Baza: Faqat yagona Neon Tech PostgreSQL.
+- Android SQLite: Hozircha tasdiqlanmagan. Foydalanuvchining "Ilova faqat internet
+  bor paytda ishlasin, internetsiz kirish bloklansin" talabi sababli, ilovada og'ir
+  lokal SQLite bazasi yaratilmaydi.
+- Lokal xotira: Faqat Keystore orqali shifrlangan JWT token va sessiya keshini saqlaydi.
+
+================================================================================
+6. MAVJUD CHAT TIZIMI INTEGRATSIYASI (v1.1.0)
+================================================================================
+Web platformaga v1.1.0 da muvaffaqiyatli kiritilgan xavfsiz chat tizimi Androidda
+mavjud API orqali qayta yaratilmasdan ishlatiladi:
+- GET  /api/v1/chat/[solutionId] -> Xona holati va xabarlar tarixi
+- POST /api/v1/chat/[solutionId] -> Yangi xabar yuborish
+- GET  /api/v1/chat/my          -> Barcha faol chatlar ro'yxati
+- Cheklovlar: Faqat yechim statusi SHORTLISTED, SELECTED, PILOT yoki COMPLETED
+  bo'lganda ochiladi. Begona odamlarga 403 Forbidden beriladi.
+- 4 soniyalik polling, debounce (takroriy yuborishdan himoya) va CLOSED xona qoidalari.
+
+================================================================================
+7. GOOGLE PLAY MARKET VA PORTABLE PROJECT STANDARTLARI
+================================================================================
+1. GOOGLE PLAY STANDARTLARI:
+   - Package ID: uz.yechim.app | Version: 1.2.0 (Build 1)
+   - Format: .aab (Android App Bundle) va test uchun .apk
+   - release.keystore orqali Play App Signing
+   - Privacy Policy, Data Safety va majburiy Account Deletion (Akkauntni o'chirish)
+   - Adaptive App Icon va Android 12+ SplashScreen API
+
+2. PORTABLE PROJECT (HAR QANDAY MUHITDA ISHLASHI KAFOLATLANGAN):
+   - JDK: Java Development Kit 17 LTS
+   - Android SDK: compileSdk 34, minSdk 26 (Android 8.0+), targetSdk 34
+   - Gradle Wrapper (gradlew, gradlew.bat, gradle-wrapper.properties)
+   - Qat'iy fiksatsiyalangan dependency versiyalari, .gitignore, README.md qo'llanmasi.
+   - Boshqa istalgan kompyuterda yoki Android Studio/VS Code da ochganda bir martada
+     to'g'ridan-to'g'ri RUN bo'lishi ta'minlanadi.
+
+================================================================================
+8. 15 BOSQICHdan IBORAT AMALIY ISH REJASI
+================================================================================
+1-Bosqich:  Mavjud Web Backend va API auditi
+2-Bosqich:  Android texnologiyasini tanlash va tasdiqlash
+3-Bosqich:  Alohida Android repository tayyorlash
+4-Bosqich:  Loyiha arxitekturasi va muhitini sozlash
+5-Bosqich:  Autentifikatsiya va API integratsiyasi
+6-Bosqich:  Asosiy UI/UX ekranlari (Bottom Bar, Ranglar, FAB)
+7-Bosqich:  Marketplace va 14 ta viloyat bo'yicha qidiruv filtri
+8-Bosqich:  AI Problem Assistant integratsiyasi
+9-Bosqich:  Yechimlar va Taqqoslash Matritsasi (Comparison Matrix)
+10-Bosqich: Secure Chat integratsiyasi (4 soniyalik polling)
+11-Bosqich: Push Notification auditi va integratsiyasi
+12-Bosqich: Xavfsizlik va keng qamrovli testlash (No-Internet dialog, RBAC)
+13-Bosqich: APK va AAB build qilish (Production)
+14-Bosqich: GitHub va Google Play relizga tayyorlash
+15-Bosqich: Yakuniy End-to-End sinov va topshirish
+
+Har bir bosqich uchun maqsad, vazifalar, kutilgan natija va qabul qilish
+mezonlari (Acceptance Criteria) to'liq belgilangan.
+
+================================================================================
+9. XULOSA VA KEYINGI QADAM
+================================================================================
+- To'liq batafsil hujjat: YECHIMUZ_ANDROID_APK_MASTER_ROADMAP_v1.2.0.md
+- Ushbu hisobot qisqartirilgan va tizimli: YECHIMUZ_APK_v1.2.0_YANGILANGAN_REJA_HISOBOTI.txt
+- Hozirgi holat: Hech qanday kod yozilmadi, web va bazaga tegilmadi.
+- Keyingi qadam: Foydalanuvchining texnologiya tanlovi va 1-bosqichni boshlash
+  bo'yicha yozma ruxsati kutilmoqda.
+================================================================================
+Hisobot yakuni.

@@ -1,0 +1,17 @@
+
+https://vercel.com/husniddin4/yechimuz/settings/domains
+
+https://console.neon.tech/app/projects/restless-violet-94617943/branches/br-patient-resonance-beqnzr5y/computes
+
+https://github.com/Husniddin05/yechimuz
+
+Adminlar:
+
+Super admin. ---admin@yechim.uz  ----parol Admin123!
+
+cd "d:\4-kurs fayillar\startap amaliy"
+git add .
+git commit -m "Saytga yangi o'zgarishlar kiritildi"
+git push
+
+power shelda githupga yuklash yangilanishni

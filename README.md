@@ -1,259 +1,119 @@
-# YechimUZ — Milliy Muammolar va Innovatsion Yechimlar Platformasi
+# YechimUZ Android Mobile Application
 
-YechimUZ — O'zbekiston hududlari, korxonalari va jamoatchilik oldida turgan dolzarb muammolarni sun'iy intellekt (AI) yordamida tuzilmaviy **Challenge**'larga aylantirish, malakali IT muhandislari va jamoalaridan amaliy yechimlar qabul qilish, mustaqil 9 mezonli ekspert baholash hamda pilot loyihalarni amalga oshirishga mo'ljallangan milliy web-platforma.
+[![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://www.android.com)
+[![Language](https://img.shields.io/badge/Language-Kotlin%202.0.21-blue.svg)](https://kotlinlang.org)
+[![UI Toolkit](https://img.shields.io/badge/UI-Jetpack%20Compose-purple.svg)](https://developer.android.com/jetpack/compose)
+[![Target SDK](https://img.shields.io/badge/Target%20SDK-36-orange.svg)](https://developer.android.com)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)]()
 
----
-
-## 📑 Mundarija
-
-1. [Texnologiyalar steki](#-texnologiyalar-steki)
-2. [Loyiha arxitekturasi](#-loyiha-arxitekturasi)
-3. [Lokal muhitda ishga tushirish](#-lokal-muhitda-ishga-tushirish)
-4. [Konfiguratsiya (.env fayli)](#-konfiguratsiya-env-fayli)
-5. [Zaxiralash va Qayta tiklash (Backup & Restore)](#-zaxiralash-va-qayta-tiklash-backup--restore)
-6. [Production Deploy bo'yicha qo'llanma (Vercel + PostgreSQL)](#-production-deploy-boyicha-qollanma-vercel--postgresql)
-7. [Avtomatlashtirilgan testlar](#-avtomatlashtirilgan-testlar)
-8. [Xavfsizlik va RBAC tizimi](#-xavfsizlik-va-rbac-tizimi)
+> **YechimUZ** — Muammo egalari (Problem Owners) va Yechim taklif qiluvchi ekspert/dasturchilarni (Solvers) bog‘lovchi intellektual ekotizimning rasmiy Android mobil ilovasi.
 
 ---
 
-## 🚀 Texnologiyalar steki
+## 🏛️ Arxitektura va Texnologik To‘plam (Tech Stack)
 
-- **Frontend:** Next.js 14 (App Router), React 18, Tailwind CSS, Lucide React, Canvas-Confetti
-- **Backend & API:** Next.js API Routes (`/api/v1/*`), Zod Validation Schemas, Clean Service Layer (`src/services/*`)
-- **Ma'lumotlar bazasi & ORM:** Prisma ORM, SQLite (`dev.db` — lokal ishlab chiqish uchun) / PostgreSQL (Production uchun)
-- **Autentifikatsiya & Xavfsizlik:** JWT (JSON Web Tokens), Role-Based Access Control (RBAC), bcryptjs, Middleware
-- **Til & Muhit:** TypeScript, Node.js (v18+)
+Ushbu ilova **Google Android Architecture Guidelines** va **Clean Architecture** tamoyillari asosida to‘liq zamonaviy Native Kotlin tilida ishlab chiqilgan.
+
+| Qatlam / Komponent | Texnologiya | Tavsif |
+| :--- | :--- | :--- |
+| **Dasturlash tili** | Kotlin 2.0.21 | Zamonaviy va xavfsiz mobil dasturlash tili |
+| **Foydalanuvchi interfeysi** | Jetpack Compose (BOM 2024.10.01) | Deklarativ reaktiv UI, Material 3 dizayn tizimi |
+| **SDK talablari** | `minSdk: 26`, `compileSdk: 36`, `targetSdk: 36` | Android 8.0 dan Android 15+ gacha to‘liq moslik |
+| **Build tizimi** | Gradle 8.11.1 + AGP 8.9.1 | Gradle Wrapper (`./gradlew`) orqali har qanday muhitda mustaqil build |
+| **Tarmoq (Networking)** | Retrofit 2.11.0 + OkHttp 4.12.0 | REST API mijoz, Gson konverter, avtomatik sessiya CookieJar |
+| **Xavfsizlik** | Hardware-backed Android Keystore (AES-256-GCM) | Token va sessiya ma'lumotlarini apparat darajasida shifrlash |
+| **Sinxronizatsiya** | 100% Strict Online Mode | Ma'lumotlar to‘g‘ridan-to‘g‘ri Vercel/Neon DB bilan sinxron, oflayn chalkashliklarsiz |
+| **Real-time Chat** | 4-second Lifecycle-aware Polling | 1:1 xavfsiz chat, xabarlarni yuborish va o‘qish holati |
+| **Hududlar filtri** | 14 ta O‘zbekiston viloyatlari chiplari | Respublika bo‘ylab muammolarni qulay saralash |
+| **Google Play Moslik** | UGC Report/Block, Account Deletion | Play Store xavfsizlik va ma'lumotlar maxfiyligi talablariga 100% mos |
 
 ---
 
-## 🏛 Loyiha arxitekturasi
+## 🌐 Markaziy Backend API Bog‘lanishi
 
-Loyiha professional qatlamli (layered) arxitekturaga muvofiq tashkil etilgan:
+Android ilova to‘g‘ridan-to‘g‘ri ma'lumotlar bazasiga (PostgreSQL) TCP orqali ulanmaydi. Barcha amallar HTTPS REST protokoli orqali mavjud ishlab turgan Backend API bilan amalga oshiriladi:
 
+- **API Bazaviy Manzil:** `https://yechimuz-lovat.vercel.app/api/v1`
+- **Autentifikatsiya:** `yechimuz_token` sessiya cookie'si va `Authorization: Bearer <token>` sarlavhalari avtomatik inyeksiyasi orqali ta'minlanadi.
+
+---
+
+## 📂 Loyiha Tuzilmasi (Folder Structure)
+
+```text
+startap apk/
+├── app/
+│   ├── src/
+│   │   └── main/
+│   │       ├── AndroidManifest.xml          # Ilova ruxsatlari va deklaratsiyalari
+│   │       ├── java/uz/yechim/app/
+│   │       │   ├── YechimUzApp.kt           # Application klassi
+│   │       │   ├── MainActivity.kt          # Asosiy faoliyat, Onlayn tarmoq nazorati
+│   │       │   ├── core/
+│   │       │   │   ├── network/             # RetrofitClient, SessionCookieJar
+│   │       │   │   ├── security/            # KeystoreManager (AES-256-GCM)
+│   │       │   │   └── theme/               # YechimUzTheme, Color, Type
+│   │       │   ├── data/
+│   │       │   │   ├── model/               # DTO modellar (Problem, Solution, Chat, User)
+│   │       │   │   └── remote/              # ApiService Retrofit interfeysi
+│   │       │   └── presentation/
+│   │       │       ├── auth/                # Login va Ro'yxatdan o'tish ekranlari
+│   │       │       ├── home/                # Asosiy dashboard, AI tavsiyalar, Statistika
+│   │       │       ├── problems/            # 14 viloyat filtri bilan Muammolar bozori
+│   │       │       ├── ai/                  # AI orqali muammo/challenge yaratish
+│   │       │       ├── solutions/           # Yechimlar matritsasi va g'olibni tanlash
+│   │       │       ├── chat/                # 1:1 xavfsiz chat va UGC shikoyat/bloklash
+│   │       │       ├── profile/             # Foydalanuvchi profili, Akkauntni o'chirish
+│   │       │       └── navigation/          # AppNavGraph, BottomNavigationBar
+│   │       └── res/                         # XML resurslar, ranglar, mavzular, backup qoidalari
+│   ├── build.gradle.kts                     # App moduli sozlamalari
+│   └── proguard-rules.pro                   # R8 / ProGuard qoidalari
+├── gradle/wrapper/                          # Gradle 8.11.1 Wrapper binarlari
+├── build.gradle.kts                         # Loyiha darajasidagi build skripti
+├── settings.gradle.kts                      # Modullar va repozitoriyalar konfiguratsiyasi
+├── gradle.properties                        # JVM xotira va AndroidX sozlamalari
+├── gradlew & gradlew.bat                    # Gradle ishga tushiruvchi CLI skriptlari
+└── README.md                                # Ushbu yo'riqnoma
 ```
-startap amaliy/
-├── _backups/                 # Ma'lumotlar bazasi va tizim zaxira nusxalari (Backups)
-├── prisma/
-│   ├── dev.db               # SQLite lokal ma'lumotlar bazasi
-│   ├── schema.prisma        # Prisma DB modeli va munosabatlari
-│   └── seed.ts              # Boshlang'ich hududlar, kategoriyalar va test foydalanuvchilar
-├── src/
-│   ├── app/                 # Next.js 14 App Router sahifalari va API endpointlar
-│   │   ├── api/v1/          # REST API marshrutlari (auth, problems, solutions, solvers, admin, ai)
-│   │   ├── admin/           # Boshqaruvchi (Admin Panel) sahifalari
-│   │   ├── dashboard/       # Foydalanuvchi, Ekspert va Muhandis shaxsiy kabinetlari
-│   │   ├── problems/        # Muammolar marketplace'i va batafsil ko'rish
-│   │   └── solutions/       # Yechimlarni yuborish va ko'rish sahifalari
-│   ├── components/          # Qayta ishlatiluvchi UI komponentlar
-│   ├── context/             # React Context (AuthContext)
-│   ├── lib/                 # Yordamchi tizim modullari (auth, prisma, api-response, utils)
-│   ├── middleware.ts        # Himoyalangan yo'llar uchun Next.js global middleware
-│   ├── services/            # Biznes-mantiq qatlami (Auth, Problem, Solution, Solver, Admin)
-│   ├── types/               # Umumiy TypeScript tip tavsiflari
-│   └── validators/          # Zod sxemalari (kiruvchi ma'lumotlarni qat'iy tekshirish)
-└── tests/                   # Avtomatlashtirilgan integratsion va xavfsizlik testlari
-```
 
 ---
 
-## 💻 Lokal muhitda ishga tushirish
+## 🚀 Ilovani Boshqa Dasturlash Muhitida (Android Studio) Ishga Tushirish Yo‘riqnomasi
 
-Lokal kompyuterda loyihani ishga tushirish uchun quyidagi ketma-ketlikni bajaring:
+Ushbu loyiha **Portable** formatda yaratilgan bo‘lib, uni istalgan kompyuterda quyidagi oddiy qadamlar bilan ochish va ishga tushirish mumkin:
 
 ### 1. Talablar
-- Node.js: `v18.17.0` yoki undan yuqori
-- npm: `v9.0.0` yoki undan yuqori
-- Git
+- **Android Studio:** Ladybug (2024.2.1+) yoki undan yangi versiya tavsiya etiladi.
+- **JDK:** Java 17 LTS yoki Java 21 (Android Studio bilan o‘rnatilgan JBR ishlatiladi).
+- **Android SDK:** API 26 dan API 36 gacha o‘rnatilgan bo‘lishi lozim.
 
-### 2. Bog'liqliklarni o'rnatish
-Loyiha ildiz papkasida terminalni oching va paketlarni o'rnating:
-```bash
-npm install
-```
+### 2. Android Studio'da ochish
+1. **Android Studio** dasturini ishga tushiring.
+2. Boshlang‘ich oynada **Open** tugmasini bosing.
+3. `startap apk` papkasini tanlang va **OK** tugmasini bosing.
+4. Android Studio loyihani avtomatik aniqlaydi va **Gradle Sync** jarayonini boshlaydi.
+5. Internet aloqasi mavjud bo‘lganda kerakli barcha Android kutubxonalari avtomatik yuklanadi.
 
-### 3. Atrof-muhit faylini yaratish
-`.env.example` faylidan nusxa olib, `.env` faylini yarating:
-```bash
-# Windows PowerShell:
-Copy-Item .env.example .env
+### 3. Ilovani Run qilish
+1. Yuqori paneldagi qurilmalar ro‘yxatidan **Android Emulator** (masalan, Pixel 8 - API 34 yoki API 35) yoki USB orqali ulangan **real Android telefonni** tanlang.
+2. Yashil **Run ('app')** tugmasini bosing (yoki `Shift + F10`).
+3. Dastur kompilyatsiya qilinadi va qurilmaga o‘rnatilib, darhol ishga tushadi.
 
-# Linux / macOS:
-cp .env.example .env
-```
+### 4. Terminal orqali APK yig‘ish (CLI)
+Agarda siz terminaldan foydalanmoqchi bo‘lsangiz:
 
-### 4. Ma'lumotlar bazasini tayyorlash
-Prisma orqali SQLite sxemasini yuklang:
-```bash
-npx prisma generate
-npx prisma db push
-```
+```powershell
+# Debug APK yaratish:
+.\gradlew.bat assembleDebug
 
-### 5. Boshlang'ich ma'lumotlarni (Seed) yuklash
-Platforma to'g'ri ishlashi uchun kategoriyalar, rollar va namunaviy ma'lumotlarni bazaga kiriting:
-```bash
-npx tsx prisma/seed.ts
-```
-
-### 6. Loyihani ishlab chiqish rejimida ishga tushirish
-```bash
-npm run dev
-```
-Brauzer orqali oching: **`http://localhost:3000`**
-
----
-
-## 🔑 Konfiguratsiya (.env fayli)
-
-Loyiha uchun barcha konfiguratsiyalar `.env` faylida saqlanadi. Namuna (`.env.example`):
-
-| O'zgaruvchi | Standart qiymat | Tavsif |
-| :--- | :--- | :--- |
-| `DATABASE_URL` | `"file:./dev.db"` | Lokal SQLite fayl yo'li (Productionda PostgreSQL manzili) |
-| `JWT_SECRET` | *(Kuchli tasodifiy satr)* | JWT tokenlarni imzolash uchun maxfiy kalit (kamida 32 belgi) |
-| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | Platformaning bazaviy URL manzili |
-| `AI_SERVICE_API_KEY` | *(Opsional)* | AI yordamchi xizmatlari kaliti |
-| `NODE_ENV` | `development` | Ishlash muhiti (`development` yoki `production`) |
-
-> [!WARNING]
-> Production muhitida `JWT_SECRET` parametri o'rnatilmagan bo'lsa yoki standart qiymatda qolsa, xavfsizlik tekshiruvchisi serverni qat'iy to'xtatadi. Hech qachon haqiqiy kalitlarni GitHub'ga yuklamang!
-
----
-
-## 🛡 Zaxiralash va Qayta tiklash (Backup & Restore)
-
-### Lokal SQLite ma'lumotlar bazasini zaxiralash
-Lokal SQLite bazasi `prisma/dev.db` faylida joylashgan.
-
-1. **Zaxira nusxa yaratish:**
-   ```powershell
-   # PowerShell orqali:
-   $ts = Get-Date -Format "yyyy-MM-ddTHH-mm-ss"
-   New-Item -ItemType Directory -Force -Path "_backups/backup_$ts"
-   Copy-Item "prisma/dev.db" "_backups/backup_$ts/dev.db.bak"
-   ```
-2. **Qayta tiklash (Restore):**
-   ```powershell
-   # Oxirgi zaxira nusxasini tiklash:
-   Copy-Item "_backups/backup_<SANA>/dev.db.bak" "prisma/dev.db" -Force
-   ```
-
-### PostgreSQL (Production) ma'lumotlar bazasini zaxiralash
-Production serverda PostgreSQL uchun standart vositalardan foydalaniladi:
-- **Backup olish:**
-  ```bash
-  pg_dump -U <foydalanuvchi> -h <host> -d <baza_nomi> -F c -b -v -f yechimuz_backup.dump
-  ```
-- **Qayta tiklash:**
-  ```bash
-  pg_restore -U <foydalanuvchi> -h <host> -d <baza_nomi> -v yechimuz_backup.dump
-  ```
-
----
-
-## ☁️ Production Deploy bo'yicha qo'llanma (Vercel + PostgreSQL)
-
-Serverless hosting muhitida (masalan, Vercel) fayl tizimi vaqtinchalik (ephemeral) bo'lganligi sababli, SQLite bazasi ishlamaydi. Production uchun **PostgreSQL** tavsiya etiladi (masalan: Neon.tech, Supabase yoki AWS RDS).
-
-### 1. PostgreSQL ma'lumotlar bazasini yaratish
-1. [Neon.tech](https://neon.tech) yoki [Supabase](https://supabase.com) dan bepul PostgreSQL instansiyasini oching.
-2. Ulanish satrini oling, masalan:
-   `postgresql://user:password@ep-cool-db.us-east-1.aws.neon.tech/yechimuz?sslmode=require`
-
-### 2. Prisma sxemasini PostgreSQL ga sozlash
-`prisma/schema.prisma` faylida provayderni o'zgartiring:
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-```
-
-### 3. Vercel'da Environment Variables sozlash
-Vercel loyihasi boshqaruv panelida (Settings -> Environment Variables) quyidagilarni kiriting:
-- `DATABASE_URL`: PostgreSQL ulanish manzili
-- `JWT_SECRET`: Kuchli 64 belgili maxfiy kalit (masalan: `openssl rand -hex 32`)
-- `NEXT_PUBLIC_APP_URL`: Domen manzili (masalan: `https://yechim.uz`)
-- `NODE_ENV`: `production`
-
-### 4. Vercel Build sozlamalari
-- **Build Command:** `prisma generate && next build`
-- **Output Directory:** `.next`
-- **Install Command:** `npm install`
-
-Deploy tugagach, ma'lumotlar bazasi jadvallarini yuklash uchun lokal terminaldan buyruq bering:
-```bash
-npx prisma db push
+# Natijaviy APK manzili:
+# app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ---
 
-## 🧪 Avtomatlashtirilgan testlar
-
-Platformada barcha asosiy funksiyalar va xavfsizlik qoidalari avtomatlashtirilgan testlar orqali tekshirilgan. Testlarni quyidagi buyruqlar orqali ishga tushirishingiz mumkin:
-
-| Test to'plami | Fayl | Sinovlar soni | Maqsadi |
-| :--- | :--- | :---: | :--- |
-| **Auth & RBAC** | `tests/phase1-auth.test.ts` | 17 ta | Ro'yxatdan o'tish, rollar, JWT va profil |
-| **Muammolar & Filtr** | `tests/phase2-problems.test.ts` | 10 ta | Muammo yaratish, hududiy qidiruv va statuslar |
-| **Yechimlar & Baholash** | `tests/phase3-solutions.test.ts` | 12 ta | Yechim yuborish, 9 mezonli ekspert baholash, shortlist |
-| **Xavfsizlik & Ruxsatlar** | `tests/phase6-security.test.ts` | 6 ta | Ruxsatsiz status o'zgartirish va shortlist bloklanishi |
-
-### Barcha testlarni ishga tushirish:
-```bash
-# 1. Autentifikatsiya testlari
-npx tsx tests/phase1-auth.test.ts
-
-# 2. Muammolar testlari
-npx tsx tests/phase2-problems.test.ts
-
-# 3. Yechimlar va ekspert baholash testlari
-npx tsx tests/phase3-solutions.test.ts
-
-# 4. Xavfsizlik va ruxsatlar testlari
-npx tsx tests/phase6-security.test.ts
-
-# 5. TypeScript tekshiruvi (0 errors)
-npx tsc --noEmit
-
-# 6. Production Build tekshiruvi
-npm run build
-```
-
----
-
-## 🔒 Xavfsizlik va RBAC tizimi
-
-Platformada quyidagi xavfsizlik mexanizmlari qat'iy joriy etilgan:
-
-1. **Ruxsatsiz Status O'zgartirishdan Himoya:**
-   - Muammo statusini faqat muammo egasi (`problem.ownerId === userId`) yoki vakolatli ma'murlar (`ADMIN`, `SUPER_ADMIN`, `MODERATOR`) o'zgartira oladi.
-   - Begona foydalanuvchilar urinishlari servis qatlamida 403 xatolik bilan bloklanadi.
-2. **Yechimlarni Shortlist Qilish Himoyasi:**
-   - Yechimni shortlistga kiritish faqat tegishli muammo egasi, tayinlangan `EXPERT` yoki tizim `ADMIN`i tomonidan amalga oshirilishi mumkin.
-3. **Production JWT Himoyasi:**
-   - Maxfiy kalitsiz tizim production rejimida ishga tushmaydi.
-4. **Xavfsiz JSON Parsing:**
-   - SQLite matnli maydonlari `safeJsonParse()` orqali xavfsiz o'qiladi va server qulashining oldi olinadi.
-5. **Audit Jurnali (Audit Logging):**
-   - Barcha muhim amallar (muammo statusi, admin qarorlari) `AuditLog` jadvalida qayd etib boriladi.
-
----
-
-## 👥 Foydalanuvchi rollari
-
-- `USER` — Oddiy foydalanuvchi / fuqaro
-- `SOLVER` — Muammo va challenge'larga yechim taklif qiluvchi muhandis / dasturchi
-- `PROBLEM_OWNER` — Muammo e'lon qiluvchi shaxs yoki subyekt
-- `COMPANY` — Korxona yoki sanoat tashkiloti
-- `STARTUP` — Innovatsion startap jamoasi
-- `EXPERT` — Yechimlarni 9 mezon asosida baholovchi mustaqil ekspert
-- `SPONSOR` — Loyihalarni moliyalashtiruvchi homiy
-- `MODERATOR` — Kontent sifatini tekshiruvchi
-- `ADMIN` / `SUPER_ADMIN` — Platforma boshqaruvchilari
-
----
-
-## 📄 Litsenziya
-
-YechimUZ loyihasi mualliflik huquqi bilan himoyalangan. Barcha huquqlar saqlangan.
+## 🔒 Xavfsizlik va Google Play Siyosati
+- **Sessiya Xavfsizligi:** Tokenlar va sessiya kalitlari hech qachon ochiq matn (plain-text) yoki oddiy `SharedPreferences`da saqlanmaydi. Ular `AndroidKeyStore`ning AES-256-GCM apparat darajasidagi kalitlari bilan shifrlanadi.
+- **Bulutli Nusxalash Himoyasi:** `data_extraction_rules.xml` va `backup_rules.xml` orqali shaxsiy kalitlar va tokenlarning Google Drive avtomatik backupiga tushib qolishi qat'iyan taqiqlangan.
+- **UGC Kontent Himoyasi:** Chat va yechimlarda nomaqbul xabarlar va foydalanuvchilar ustidan "Shikoyat qilish (Report)" va "Foydalanuvchini bloklash (Block)" funksiyalari to‘liq joriy qilingan.
+- **Akkauntni O‘chirish:** Profil ekranida Google Play talabiga asosan foydalanuvchi hisobini va unga tegishli barcha ma'lumotlarni o‘chirish imkoniyati yaratilgan.

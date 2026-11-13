@@ -1,0 +1,9 @@
+## Ushbu fayl shaxsiy kompyuteringizdagi Android SDK manzilini ko'rsatish uchun xizmat qiladi.
+## Android Studio'da ochilganda ushbu fayl avtomatik tarzda yaratiladi.
+## Qo'lda yaratish zarurati tug'ilsa, faylni 'local.properties' deb nomlang va SDK manzilingizni yozing:
+##
+## Windows uchun namuna:
+# sdk.dir=C\:\\Users\\SIZNING_USERNAME\\AppData\\Local\\Android\\Sdk
+##
+## macOS / Linux uchun namuna:
+# sdk.dir=/Users/SIZNING_USERNAME/Library/Android/sdk
